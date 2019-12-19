@@ -3,7 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from pandas.plotting import register_matplotlib_converters
-
+import pytz
 import numpy as np
 import datetime as dt
 
@@ -13,17 +13,24 @@ font = {'family' : 'meiryo'}
 matplotlib.rc('font', **font)
 
 # code
-df = pd.read_csv("./webinar-member.csv", parse_dates=["メンバー日"])
+df = pd.read_csv("./memberList.csv", parse_dates=["メンバー日"])
 dfdates = df["メンバー日"]
 times = []
 min30s=[]
 gh=0
+tz = pytz.timezone('UTC')
 
 while gh >= 49:
     min30s = min30s+[gh]
 
 # print(df.dtypes)
 for dfdate in dfdates:
+
+    # add timezone
+    dfdate = dfdate.tz_localize('UTC')
+    print(dfdate) 
+    dfdate = dfdate.astimezone('Asia/Tokyo')
+    print(dfdate)
     
     hour = dfdate.hour
     minute = dfdate.minute
@@ -38,7 +45,11 @@ for dfdate in dfdates:
         th = hour
         print("less than 46")
     elif minute >= 46:
-        th += 1
+        if not th == 23:
+            th += 1
+        else:
+            th = 0
+            
         tm = 0
         print("more than 46")
 
